@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <sys/wait.h>
-
+#include <sys/mman.h>
+ #include <sys/wait.h>
+ 
+ 
 int Data =1;
 int BSS =0;
 
@@ -18,10 +20,19 @@ int main(){
   printf("Stack location : %p\n",&Stack);
   printf("Main location : %p\n",&main);
   printf("Libc location : %p\n",&printf);
-  //printf("PID = %d\n",getpid());
+  
+  int status;
+ 
   char * s_pid;
   sprintf(s_pid,"%d",getpid());
   
-  execlp("/usr/bin/pmap", "-X",s_pid,NULL);
+  int pid=fork();
+  if (pid ==0){
+    execlp("/usr/bin/pmap", "-X",s_pid,NULL);    
+  }
+  else {
+    wait(&status);
+  }
+
 
 }

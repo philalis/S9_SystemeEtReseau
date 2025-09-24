@@ -9,9 +9,11 @@ typedef struct HEADER_TAG {
     long magic_number;
 } HEADER;
 
-static HEADER *free_list = NULL;
+static HEADER * free_list;
+
 
 void* malloc_3is(size_t size) {
+    free_list;
     HEADER *prev = NULL;
     HEADER *curr = free_list;
     while (curr != NULL) {
@@ -50,36 +52,51 @@ void free_3is(void *ptr) {
     block->ptr_next = free_list;
     free_list = block;
 }
-// TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+
 int main() {
-
+// 1. allocations multiples
     printf("Allocation of 50 octets\n");
-    void * var = sbrk(0);
-    char *p = (char*)malloc_3is(10);
-    void * var2 = sbrk(0);
-    char *p2 = (char*)malloc_3is(100);
+    int * var = sbrk(0);
+    char *p = (char*)malloc_3is(40);
+    int * var2 = sbrk(0);
+    char *p2 = (char*)malloc_3is(20);
 
-
-
-    sprintf(p, "Hello Allocator");
+    sprintf(p, "Hello Allocator\n");
     printf("%s\n",p);
-    printf("memory before : %p", var);
-    printf("memory inter  : %p",var2);
-    printf("memory after  : %p",sbrk(0));
+    printf("memory before : %p\n", var);
+    printf("memory inter  : %p\n",var2);        //memory grew by 44 bits
+    printf("memory after  : %p\n",sbrk(0));// memory grew by 44 bits
+    //-> the size seems right, the header + magic_number are 24 bits long.
 
 
-    printf("Bloc Liberation");
+    // 2. liberation block
+    printf("Bloc Liberation\n");
     free_3is(p);
 
-    printf("Re-allocation of 30 octets");
+// 4. Réutilisation de block existant.
+    printf("Re-allocation of 30 octets\n");
     var = sbrk(0);
     char *q = (char*)malloc_3is(30);
-    printf("memory before : ",var);
-    printf("memory after  : ",sbrk(0));
+    printf("memory before : %p\n",var);
+    printf("memory after  : %p\n",sbrk(0)); // memory stays the same, since the block is re-used
 
-    sprintf(q, "Hello Allocator Again !");
+    sprintf(q, "Hello Allocator Again !\n");
     printf("%s",q);
-
     free_3is(q);
-    return 0;
+
+//3 vérification débordement
+
+
+
+
+
+
+
+
+
+
+
+
+
+         return 0;
 }

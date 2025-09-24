@@ -13,7 +13,6 @@ static HEADER * free_list;
 
 
 void* malloc_3is(size_t size) {
-    free_list;
     HEADER *prev = NULL;
     HEADER *curr = free_list;
     while (curr != NULL) {
@@ -64,7 +63,7 @@ int main() {
     sprintf(p, "Hello Allocator\n");
     printf("%s\n",p);
     printf("memory before : %p\n", var);
-    printf("memory inter  : %p\n",var2);        //memory grew by 44 bits
+    printf("memory inter  : %p\n",var2);        //memory grew by 64 bits
     printf("memory after  : %p\n",sbrk(0));// memory grew by 44 bits
     //-> the size seems right, the header + magic_number are 24 bits long.
 
@@ -85,18 +84,6 @@ int main() {
     free_3is(q);
 
 //3 vérification débordement
-
-
-
-
-
-
-
-
-
-
-
-
 
          return 0;
 }

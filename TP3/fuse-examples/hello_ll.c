@@ -10,7 +10,7 @@
 
 #define FUSE_USE_VERSION 26
 
-#include <fuse_lowlevel.h>
+#include <fuse/fuse_lowlevel.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

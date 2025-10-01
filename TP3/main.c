@@ -21,6 +21,7 @@ struct tosfs_superblock *sb;
 struct tosfs_inode *inodes;
 void *addr;
 
+/*
 static void main_getattr(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi __attribute__((unused))){
     struct stat stbuf = {0};
     if (ino == 0 || ino > sb->inodes) {
@@ -37,7 +38,7 @@ static void main_getattr(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *
     stbuf.st_blocks = inodes[ino].size / sb->block_size;
     fuse_reply_attr(req, &stbuf, 1.0);
 }
-
+*/
 static void main_readdir(fuse_req_t req, fuse_ino_t ino, size_t size,
                         off_t off, struct fuse_file_info *fi){
     if (inodes[ino].mode != S_IFDIR) {
@@ -69,7 +70,7 @@ static void main_readdir(fuse_req_t req, fuse_ino_t ino, size_t size,
 
     fuse_reply_buf(req, buffer, total_size);
 }
-
+/*
 static void main_lookup(fuse_req_t req, fuse_ino_t parent, const char *name) {
     struct fuse_entry_param e;
 
@@ -102,7 +103,7 @@ static void main_lookup(fuse_req_t req, fuse_ino_t parent, const char *name) {
 
     fuse_reply_err(req, ENOENT);
 }
-
+*/
 static void main_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, struct fuse_file_info *fi) {
     if (ino == 0 || ino > sb->inodes) {
         fuse_reply_err(req, ENOENT);
@@ -135,14 +136,14 @@ static void main_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, st
 }
 
 static struct fuse_lowlevel_ops main_oper = {
-    .getattr = main_getattr,
+    // .getattr = main_getattr,
     .readdir = main_readdir,
-    .lookup = main_lookup,
+    //.lookup = main_lookup,
     .read = main_read,
 };
 
 int main(int argc, char *argv[]) {
-    const char *filename = "/home/justine/CLionProjects/S9_SystemeEtReseau/TP3/Ressources FS-20251001/test_tosfs_files";
+    const char *filename = "Ressources FS-20251001/test_tosfs_files";
     int fd = open(filename, O_RDWR);
     if (fd == -1) {
         perror("open");

@@ -9,22 +9,23 @@ typedef struct HEADER_TAG {
     long magic_number;
 } HEADER;
 
-static HEADER * free_list;
+static struct HEADER_TAG free_list;
+
 
 
 void* malloc_3is(size_t size) {
     HEADER *prev = NULL;
-    HEADER *curr = free_list;
+    HEADER *curr = &free_list;
     while (curr != NULL) {
         if (curr->bloc_size >= size) {
-            if (prev) prev->ptr_next = curr->ptr_next;
-            else free_list = curr->ptr_next;
-
+            prev->ptr_next = curr->ptr_next;
             curr->ptr_next = NULL;
             curr->magic_number = MAGIC_NUMBER;
 
-            return (void*)(curr + 1);
+            return (void*)(curr + sizeof(struct HEADER_TAG));
         }
+        prev = curr;
+        curr = curr->ptr_next;
     }
 
     void *request = sbrk(size + sizeof(HEADER));
@@ -35,21 +36,34 @@ void* malloc_3is(size_t size) {
     curr->bloc_size = size;
     curr->ptr_next = NULL;
     curr->magic_number = MAGIC_NUMBER;
+    long * magic_location = sbrk(size);
+    *magic_location = MAGIC_NUMBER;
 
-    return (void*)(curr + 1);
+    return (void*)(curr + sizeof(struct HEADER_TAG));
 }
 
 void free_3is(void *ptr) {
     if (ptr == NULL)return;
-    HEADER *block = (HEADER*)ptr-1;
+    HEADER *block = (HEADER*)ptr-sizeof(struct HEADER_TAG);
 
     if (block->magic_number != MAGIC_NUMBER) {
         printf("[ERROR] MEMORY CORRUPTED DETECTED\n");
         return;
     }
 
-    block->ptr_next = free_list;
-    free_list = block;
+    struct HEADER_TAG * current_free_in_list = &free_list;
+    struct HEADER_TAG * previous_free_in_list = NULL;
+    while (current_free_in_list->ptr_next != NULL) {
+        if (current_free_in_list->bloc_size > block->bloc_size) {
+            previous_free_in_list->ptr_next = block;
+            block->ptr_next = current_free_in_list;
+            return;
+        }
+        previous_free_in_list = current_free_in_list;
+        current_free_in_list = current_free_in_list->ptr_next;
+    }
+    //rajouter à la fin
+    current_free_in_list->ptr_next = block;
 }
 
 int main() {
